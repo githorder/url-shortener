@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Url {
+  id          String   @id @default(uuid())
+  originalUrl String
+  shortUrl    String   @unique
+  createdAt   DateTime @default(now())
+  clickCount  Int      @default(0)
+  expiresAt   DateTime?
+  visits      UrlVisit[]
+}
+
+model UrlVisit {
+  id        String   @id @default(uuid())
+  visitedAt DateTime @default(now())
+  ipAddress String
+  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  urlId     String
+}
